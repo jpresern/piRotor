@@ -17,7 +17,7 @@ class AdafruitLoader:
             return pwm
 
     def getBNO055Module(self):
-        if self.mode == 'test':
+        if (self.mode == 'test') | (self.mode == 'motor_only'):
             from mocks.bno import BNO
             bno = BNO()
             return bno

@@ -6,6 +6,7 @@ from pid import PID
 import time
 import sys
 
+
 class FlightController:
 
     def __init__(self, mode):
@@ -76,7 +77,7 @@ class FlightController:
         pwmValue = 261
         print("Press i to increase speed, d to decrease, q to quit")
         while not(exit):
-            action = raw_input()
+            action = input()
 
             if action == "i":
                 pwmValue+=1
@@ -88,8 +89,7 @@ class FlightController:
             print(pwmValue)
 
             if not(exit):
-                setPwmForAllMotors(pwmValue)
-
+                self.setPwmForAllMotors(pwmValue)
 
     def autonomousControl(self):
 
