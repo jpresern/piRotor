@@ -9,7 +9,7 @@ import sys
 
 class FlightController:
 
-    def __init__(self, mode):
+    def __init__(self, mode, n_motors = 4):
         self.mode = mode
         adafruitLoader = AdafruitLoader(self.mode)
         self.pwm = adafruitLoader.getPwmModule()
@@ -20,11 +20,17 @@ class FlightController:
 
         # Set frequency to 60hz, good for servos.
         self.pwm.set_pwm_freq(60)
-
-        self.motor1 = Motor(0, self.pwm, 276,457)
-        self.motor2 = Motor(1, self.pwm, 276,457)
-        self.motor3 = Motor(14, self.pwm, 276,457)
-        self.motor4 = Motor(15, self.pwm, 276,457)
+        self.motor_channels = []
+        available_channels = [0, 1, 14, 15]
+        for i in range(n_motors):
+            self.motor_channels.append(available_channels[i])
+        self.no_motors = 4
+        self.motors = []
+        for m in self.motor_channels:
+            self.motors.append(Motor(m, self.pwm, 276,457))
+        # self.motor2 = Motor(1, self.pwm, 276,457)
+        # self.motor3 = Motor(14, self.pwm, 276,457)
+        # self.motor4 = Motor(15, self.pwm, 276,457)
 
     def getPWMValueFromNanoseconds(self,nanoseconds):
         print(nanoseconds)
@@ -33,30 +39,38 @@ class FlightController:
 
     def armMotors(self):
         print('Arming motors')
-        self.motor1.arm()
-        self.motor2.arm()
-        self.motor3.arm()
-        self.motor4.arm()
-        time.sleep(5)
+        for m in self.motors:
+            m.arm()
+        # self.motor1.arm()
+        # self.motor2.arm()
+        # self.motor3.arm()
+        # self.motor4.arm()
+        # time.sleep(5)
 
     def stopMotors(self):
         print("Stopping")
-        self.motor1.stop()
-        self.motor2.stop()
-        self.motor3.stop()
-        self.motor4.stop()
+        for m in self.motors:
+            m.stop()
+        # self.motor1.stop()
+        # self.motor2.stop()
+        # self.motor3.stop()
+        # self.motor4.stop()
 
     def calibrateThrottles(self):
-        self.motor1.calibrateThrottle()
-        self.motor2.calibrateThrottle()
-        self.motor3.calibrateThrottle()
-        self.motor4.calibrateThrottle()
+        for m in self.motors:
+            m.calibrateThrottle()
+        # self.motor1.calibrateThrottle()
+        # self.motor2.calibrateThrottle()
+        # self.motor3.calibrateThrottle()
+        # self.motor4.calibrateThrottle()
 
     def setPwmForAllMotors(self, pwmValue):
-        self.motor1.setPwmValue(pwmValue)
-        self.motor2.setPwmValue(pwmValue)
-        self.motor3.setPwmValue(pwmValue)
-        self.motor4.setPwmValue(pwmValue)
+        for m in self.motors:
+            m.setPwmValue(pwmValue)
+        # self.motor1.setPwmValue(pwmValue)
+        # self.motor2.setPwmValue(pwmValue)
+        # self.motor3.setPwmValue(pwmValue)
+        # self.motor4.setPwmValue(pwmValue)
 
     def simpleExample(self):
         print('Starting motors at 300')
@@ -123,17 +137,24 @@ class FlightController:
 
             print('PITCH PID OUTPUT: '+str(pitchPIDOutput))
 
-            motor1Value = int(round(self.motor1.getPwmValue()+pitchPIDOutput))
-            motor2Value = int(round(self.motor2.getPwmValue()+pitchPIDOutput))
+            motorValue = []
+            for m in self.motors:
+                motorValue.append(int(round(m.getPwmValue()+pitchPIDOutput)))
+            # motor1Value = int(round(self.motor1.getPwmValue()+pitchPIDOutput))
+            # motor2Value = int(round(self.motor2.getPwmValue()+pitchPIDOutput))
+            #
+            # motor3Value = int(round(self.motor3.getPwmValue()-pitchPIDOutput))
+            # motor4Value = int(round(self.motor4.getPwmValue()-pitchPIDOutput))
 
-            motor3Value = int(round(self.motor3.getPwmValue()-pitchPIDOutput))
-            motor4Value = int(round(self.motor4.getPwmValue()-pitchPIDOutput))
+            # print('motor1={0} motor2={1} motor3={2} motor4={3}'.format(motor1Value, motor2Value, motor3Value, motor4Value))
+            for i, m in enumerate(self.motors):
+                print("".join('motor' + str(i)).format(motorValue[i]))
 
-            print('motor1={0} motor2={1} motor3={2} motor4={3}'.format(motor1Value, motor2Value, motor3Value, motor4Value))
-
-            self.motor1.setPwmValue(motor1Value)
-            self.motor2.setPwmValue(motor2Value)
-            self.motor3.setPwmValue(motor3Value)
-            self.motor4.setPwmValue(motor4Value)
+            for i, m in enumerate(self.motors):
+                m.setPwmValue(motorValue[i])
+            # self.motor1.setPwmValue(motor1Value)
+            # self.motor2.setPwmValue(motor2Value)
+            # self.motor3.setPwmValue(motor3Value)
+            # self.motor4.setPwmValue(motor4Value)
 
             time.sleep(1)
