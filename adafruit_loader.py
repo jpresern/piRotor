@@ -22,6 +22,7 @@ class AdafruitLoader:
             bno = BNO()
             return bno
         else:
+            ## krah
             from Adafruit_BNO055 import BNO055
             # Create and configure the BNO sensor connection.  Make sure only ONE of the
             # below 'bno = ...' lines is uncommented:
